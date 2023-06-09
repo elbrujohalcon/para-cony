@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Ejercicios</title>
+        <script src="tests.js"></script>
+        <script src="solutions.js"></script>
+        <style>
+            body {
+                font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+            }
+            dl.tests {
+                display: inline-block;
+                width: 100%;
+            }
+            dt.emoji {
+                margin-right: 5px;
+                display: inline-block;
+                float: left;
+                clear: left;
+                font-size: x-small;
+            }
+
+            dd.testtit {
+                display: inline-block;
+                float: left;
+                padding-left: 0;
+                margin-left: 0;
+                margin-bottom: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Ejercicios para Cony</h1>
+        <p>Vamos a hacer una lista de supermercado, donde puedas agregar cosas, quitar cosas, etc...</p>
+        <p>
+            La vamos a implementar como un objeto con categorias
+            (ej: <code>{"verduleria": {"manzanas": 2}, "farmacia": {"ibuprofeno": 1}}</code>)
+        </p>
+        <p>
+            Yo ya te escribí los tests que verifican que todo funciona como corresponde.
+            A medida que vayas completando los ejercicios, las "luces" del panel de aquí abajo se iran poniendo verdes.
+        </p>
+        <button onclick="runTests()">Ejecutar</button>
+        <h3>Primera Parte</h3>
+        <dl class="tests" id="section-1">
+            <dt class="emoji" id="ex-1-1">🔲</dt><dd class="testtit">Crear la lista</dd>
+            <dt class="emoji" id="ex-1-2">🔲</dt><dd class="testtit">Agregar una categoria</dd>
+            <dt class="emoji" id="ex-1-3">🔲</dt><dd class="testtit">Quitar una categoria</dd>
+            <dt class="emoji" id="ex-1-4">🔲</dt><dd class="testtit">Agregar un item</dd>
+            <dt class="emoji" id="ex-1-5">🔲</dt><dd class="testtit">Quitar un item</dd>
+            <dt class="emoji" id="ex-1-6">🔲</dt><dd class="testtit">Incrementar un item</dd>
+            <dt class="emoji" id="ex-1-7">🔲</dt><dd class="testtit">Reducir un item</dd>
+        </dl>
+
+        <h1>En funcionamiento</h1>
+        <p>Y para que veas funcionar tu código, acá abajo lo usamos todo.</p>
+        <h3>¿Qué falta comprar?</h3>
+        <dl id="glist">
+
+        </dl>
+        <button onclick="globalAddCategory()">Agregar Categoría</button>
+    </body>
+    <script>
+        let globalList = createList();
+        function globalAddCategory() {
+            let newCat = prompt("Qué categoría?");
+            globalList = addCategory(globalList, newCat);
+            refresh()
+        }
+        function globalAddItem(category) {
+            let newItem = prompt("Qué item?");
+            globalList = addItem(globalList, category, newItem);
+            refresh()
+        }
+        function globalIncItem(category, item) {
+            globalList = incItem(globalList, category, item);
+            refresh()
+        }
+        function globalDecItem(category, item) {
+            globalList = decItem(globalList, category, item);
+            if (quantityOf(globalList, category, item) === 0) {
+                removeItem(globalList, category, item)
+            }
+            refresh()
+        }
+        function globalRemoveCategory(category) {
+            let confirmed = true;
+            if (itemsIn(globalList, category).length !== 0) {
+                confirmed = confirm(`${category}  no está vacía, la borramos igual?`);
+            }
+            if(confirmed) {
+                globalList = removeCategory(globalList, category);
+                refresh()
+            }
+        }
+        function refresh() {
+            let dl = document.getElementById('glist');
+            dl.innerHTML = "";
+            for(let cat of categories(globalList)) {
+                dl.innerHTML += `<dt>➡ ${cat} <button onclick="globalRemoveCategory('${cat}')">-</button></dt>
+                                 <dd>${renderItems(cat)}<br/><button onclick="globalAddItem('${cat}')">Agregar Item</button></dd>`
+            }
+        }
+        function renderItems(cat) {
+            let items = itemsIn(globalList, cat);
+            let html = "<ul>";
+            for(let item of items) {
+                html += `<li>${item}: ${quantityOf(globalList, cat, item)}
+                            <button onclick="globalIncItem('${cat}', '${item}')">+</button>
+                            <button onclick="globalDecItem('${cat}', '${item}')">-</button>
+                         </li>`
+            }
+            return html + "</ul>";
+        }
+    </script>
+</html>
